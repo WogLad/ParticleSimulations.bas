@@ -17,103 +17,202 @@
 
 Screen 12
 colorToDraw = 6
+penSize = 20
+paused = 1
+Color 7
+_PaletteColor 7, &H992600
 'Main Loop
 Do: K$ = InKey$
-    'Draws the particles after running physics calculations
-    For pX = 640 To 1 Step -1
-        For pY = 480 To 1 Step -1
-            If Point(pX, pY) = 6 Then ' If the particle is sand.
-                If Point(pX, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX, pY + 1), 6
-                ElseIf Point(pX - 1, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY + 1), 6
-                ElseIf Point(pX + 1, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY + 1), 6
-                ElseIf Point(pX, pY + 1) = 1 Then
-                    PSet (pX, pY), 1
-                    PSet (pX, pY + 1), 6
-                ElseIf Point(pX - 1, pY + 1) = 1 Then
-                    PSet (pX, pY), 1
-                    PSet (pX - 1, pY + 1), 6
-                ElseIf Point(pX + 1, pY + 1) = 1 Then
-                    PSet (pX, pY), 1
-                    PSet (pX + 1, pY + 1), 6
-                End If
-            ElseIf Point(pX, pY) = 1 Then ' If the particle is water.
-                If Point(pX, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX, pY + 1), 1
-                ElseIf Point(pX - 1, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY + 1), 1
-                ElseIf Point(pX + 1, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY + 1), 1
-                ElseIf Point(pX - 1, pY) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY), 1
-                ElseIf Point(pX + 1, pY) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY), 1
-                End If
-            ElseIf Point(pX, pY) = 2 Then ' If the particle is acid.
-                If Point(pX, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX, pY + 1), 2
-                ElseIf Point(pX - 1, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY + 1), 2
-                ElseIf Point(pX + 1, pY + 1) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY + 1), 2
-                ElseIf Point(pX - 1, pY) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY), 2
-                ElseIf Point(pX + 1, pY) = 0 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY), 2
-
-                ElseIf Point(pX, pY + 1) = 6 Then
-                    PSet (pX, pY), 0
-                    PSet (pX, pY + 1), 0
-                ElseIf Point(pX - 1, pY + 1) = 6 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY + 1), 0
-                ElseIf Point(pX + 1, pY + 1) = 6 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY + 1), 0
-                ElseIf Point(pX - 1, pY) = 6 Then
-                    PSet (pX, pY), 0
-                    PSet (pX - 1, pY), 0
-                ElseIf Point(pX + 1, pY) = 6 Then
-                    PSet (pX, pY), 0
-                    PSet (pX + 1, pY), 0
-                End If
-            End If
-        Next
-    Next
-
     scancode% = Inp(&H60)
+    If scancode% = 57 Then
+        If paused = 0 Then
+            paused = 1 ' Pauses the game.
+        ElseIf paused = 1 Then
+            paused = 0 ' Unpauses the game.
+        End If
+    End If
+
     If scancode% = 2 Then
         colorToDraw = 6
     ElseIf scancode% = 3 Then
         colorToDraw = 1
     ElseIf scancode% = 4 Then
         colorToDraw = 2
+    ElseIf scancode% = 5 Then
+        colorToDraw = 7
+    ElseIf scancode% = 6 Then
+        colorToDraw = 4
     End If
     a$ = InKey$
 
 
     Do While _MouseInput ' To Spawn the particle
         If _MouseButton(1) Then
-            PSet (_MouseX, _MouseY), (colorToDraw)
-            'ElseIf _MouseButton(2) Then
-            '    PSet (_MouseX, _MouseY), 2
-        10 End If
+            For i = _MouseX To _MouseX + penSize Step 1
+                For ib = _MouseY To _MouseY + penSize Step 1
+                    PSet (i, ib), colorToDraw
+                Next
+            Next
+        ElseIf _MouseButton(2) Then
+            For i = _MouseX To _MouseX + penSize Step 1
+                For ib = _MouseY To _MouseY + penSize Step 1
+                    PSet (i, ib), 0
+                Next
+            Next
+        End If
     Loop
+
+    If paused = 0 Then
+        'Draws the particles after running physics calculations
+        For pX = 640 To 1 Step -1
+            For pY = 480 To 1 Step -1
+                If Point(pX, pY) = 6 Then ' If the particle is sand.
+                    If Point(pX, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 6
+                    ElseIf Point(pX - 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 6
+                    ElseIf Point(pX + 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 6
+                    ElseIf Point(pX, pY + 1) = 1 Then
+                        PSet (pX, pY), 1
+                        PSet (pX, pY + 1), 6
+                    ElseIf Point(pX - 1, pY + 1) = 1 Then
+                        PSet (pX, pY), 1
+                        PSet (pX - 1, pY + 1), 6
+                    ElseIf Point(pX + 1, pY + 1) = 1 Then
+                        PSet (pX, pY), 1
+                        PSet (pX + 1, pY + 1), 6
+                    ElseIf Point(pX, pY + 1) = 2 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 0
+                    End If
+                ElseIf Point(pX, pY) = 1 Then ' If the particle is water.
+                    If Point(pX, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 1
+                    ElseIf Point(pX - 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 1
+                    ElseIf Point(pX + 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 1
+                    ElseIf Point(pX - 1, pY) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY), 1
+                    ElseIf Point(pX + 1, pY) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY), 1
+
+                        ' The Obsidian Formation Code
+                        'ElseIf Point(pX, pY + 1) = 4 Then
+                        '    PSet (pX, pY), 0
+                        '    PSet (pX, pY + 1), 8
+                        'ElseIf Point(pX - 1, pY + 1) = 4 Then
+                        '    PSet (pX, pY), 0
+                        '    PSet (pX - 1, pY + 1), 8
+                        'ElseIf Point(pX + 1, pY + 1) = 4 Then
+                        '    PSet (pX, pY), 0
+                        '    PSet (pX + 1, pY + 1), 8
+                        'ElseIf Point(pX - 1, pY) = 4 Then
+                        '    PSet (pX, pY), 0
+                        '    PSet (pX - 1, pY), 8
+                        'ElseIf Point(pX + 1, pY) = 4 Then
+                        '    PSet (pX, pY), 0
+                        '    PSet (pX + 1, pY), 8
+                    End If
+                ElseIf Point(pX, pY) = 2 Then ' If the particle is acid.
+                    ' If the particle interacting with is air
+                    If Point(pX, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 2
+                    ElseIf Point(pX - 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 2
+                    ElseIf Point(pX + 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 2
+                    ElseIf Point(pX - 1, pY) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY), 2
+                    ElseIf Point(pX + 1, pY) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY), 2
+
+                        ' If the particle interacting with is sand
+                    ElseIf Point(pX, pY + 1) = 6 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 0
+                    ElseIf Point(pX - 1, pY + 1) = 6 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 0
+                    ElseIf Point(pX + 1, pY + 1) = 6 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 0
+                    ElseIf Point(pX - 1, pY) = 6 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY), 0
+                    ElseIf Point(pX + 1, pY) = 6 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY), 0
+
+                        ' If the particle interacting with is wood
+                    ElseIf Point(pX, pY + 1) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 0
+                    ElseIf Point(pX - 1, pY + 1) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 0
+                    ElseIf Point(pX + 1, pY + 1) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 0
+                    ElseIf Point(pX - 1, pY) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY), 0
+                    ElseIf Point(pX + 1, pY) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY), 0
+                    End If
+                ElseIf Point(pX, pY) = 4 Then
+                    If Point(pX, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 4
+                    ElseIf Point(pX - 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 4
+                    ElseIf Point(pX + 1, pY + 1) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 4
+                    ElseIf Point(pX - 1, pY) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY), 4
+                    ElseIf Point(pX + 1, pY) = 0 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY), 4
+
+                    ElseIf Point(pX, pY + 1) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX, pY + 1), 0
+                    ElseIf Point(pX - 1, pY + 1) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY + 1), 0
+                    ElseIf Point(pX + 1, pY + 1) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY + 1), 0
+                    ElseIf Point(pX - 1, pY) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX - 1, pY), 0
+                    ElseIf Point(pX + 1, pY) = 7 Then
+                        PSet (pX, pY), 0
+                        PSet (pX + 1, pY), 0
+
+                    End If
+                End If
+            Next
+        Next
+    End If
+
 Loop Until K$ = Chr$(27)
 System
-
